@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ruta Clara | Panel accesible de rutas urbanas</title>
+    <meta
+      name="description"
+      content="Panel operativo accesible para consultar, filtrar y reportar rutas urbanas seguras."
+    >
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#contenido">Saltar al contenido principal</a>
+
+    <header class="site-header">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>Ruta Clara</span>
+      </div>
+
+      <nav aria-label="Navegación principal">
+        <ul class="nav-list">
+          <li><a href="#estado">Estado</a></li>
+          <li><a href="#agenda">Agenda</a></li>
+          <li><a href="#reportar">Reportar</a></li>
+          <li><a href="#resumen">Resumen</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main id="contenido">
+      <section class="overview" aria-labelledby="titulo-principal">
+        <div class="overview-copy">
+          <p class="eyebrow">Panel operativo de movilidad</p>
+          <h1 id="titulo-principal">Rutas urbanas accesibles en tiempo real</h1>
+          <p class="lead">
+            Consulta rutas, prioriza alertas y registra incidentes con datos claros para
+            coordinar desplazamientos autónomos y verificaciones en campo.
+          </p>
+        </div>
+
+        <h2 id="indicadores-titulo" class="sr-only">Indicadores generales</h2>
+        <dl class="metric-grid">
+          <div class="metric">
+            <dt>Rutas activas</dt>
+            <dd id="active-routes">6</dd>
+          </div>
+          <div class="metric">
+            <dt>Alertas críticas</dt>
+            <dd id="critical-alerts">2</dd>
+          </div>
+          <div class="metric">
+            <dt>Tiempo medio</dt>
+            <dd>18 min</dd>
+          </div>
+        </dl>
+
+        <figure class="map-panel" aria-labelledby="mapa-titulo">
+          <svg
+            class="route-map"
+            viewBox="0 0 740 300"
+            role="img"
+            aria-labelledby="mapa-titulo mapa-descripcion"
+            focusable="false"
+          >
+            <title id="mapa-titulo">Mapa esquemático de rutas activas</title>
+            <desc id="mapa-descripcion">
+              El corredor norte está despejado, el corredor central tiene una alerta por obra,
+              y el corredor sur mantiene una alerta crítica por cruce bloqueado.
+            </desc>
+            <rect width="740" height="300" rx="0" class="map-bg"></rect>
+            <path d="M70 72 C180 54 250 110 334 92 S520 24 660 68" class="route route-safe"></path>
+            <path d="M70 154 C205 150 290 190 392 150 S536 112 660 146" class="route route-warning"></path>
+            <path d="M70 236 C210 214 288 248 392 228 S532 184 660 212" class="route route-critical"></path>
+            <g aria-hidden="true">
+              <circle cx="70" cy="72" r="8" class="node safe"></circle>
+              <circle cx="334" cy="92" r="8" class="node safe"></circle>
+              <circle cx="660" cy="68" r="8" class="node safe"></circle>
+              <circle cx="70" cy="154" r="8" class="node warning"></circle>
+              <circle cx="392" cy="150" r="8" class="node warning"></circle>
+              <circle cx="660" cy="146" r="8" class="node warning"></circle>
+              <circle cx="70" cy="236" r="8" class="node critical"></circle>
+              <circle cx="392" cy="228" r="8" class="node critical"></circle>
+              <circle cx="660" cy="212" r="8" class="node critical"></circle>
+            </g>
+            <text x="74" y="48" class="map-label">Norte</text>
+            <text x="74" y="137" class="map-label">Centro</text>
+            <text x="74" y="267" class="map-label">Sur</text>
+          </svg>
+          <figcaption>
+            Estado actual: norte despejado, centro con obra, sur con cruce bloqueado.
+          </figcaption>
+        </figure>
+      </section>
+
+      <section id="estado" class="workspace-band" aria-labelledby="estado-titulo">
+        <div class="section-heading">
+          <p class="eyebrow">Monitoreo</p>
+          <h2 id="estado-titulo">Estado de rutas</h2>
+        </div>
+
+        <section class="filter-panel" role="search" aria-labelledby="filtros-titulo">
+          <h3 id="filtros-titulo">Filtros de consulta</h3>
+
+          <div class="field-grid">
+            <label for="route-search">Buscar ruta o punto</label>
+            <input id="route-search" name="route-search" type="search" autocomplete="off">
+
+            <label for="risk-filter">Nivel de riesgo</label>
+            <select id="risk-filter" name="risk-filter">
+              <option value="all">Todos</option>
+              <option value="critical">Crítico</option>
+              <option value="warning">Precaución</option>
+              <option value="safe">Despejado</option>
+            </select>
+
+            <label for="sort-filter">Ordenar por</label>
+            <select id="sort-filter" name="sort-filter">
+              <option value="risk">Mayor riesgo</option>
+              <option value="time">Menor tiempo</option>
+              <option value="name">Nombre</option>
+            </select>
+          </div>
+
+          <div class="toggle-row">
+            <input id="compact-mode" name="compact-mode" type="checkbox">
+            <label for="compact-mode">Modo compacto</label>
+          </div>
+        </section>
+
+        <p id="result-status" class="status-line" role="status" aria-live="polite">
+          6 rutas disponibles.
+        </p>
+
+        <h3 id="resultados-titulo" class="sr-only">Resultados de rutas</h3>
+        <ul id="route-results" class="route-results"></ul>
+      </section>
+
+      <section id="agenda" class="table-band" aria-labelledby="agenda-titulo">
+        <div class="section-heading">
+          <p class="eyebrow">Operación</p>
+          <h2 id="agenda-titulo">Agenda de verificación</h2>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <caption>
+              Próximas verificaciones de accesibilidad por zona, prioridad y responsable.
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Hora</th>
+                <th scope="col">Zona</th>
+                <th scope="col">Prioridad</th>
+                <th scope="col">Responsable</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>09:30</td>
+                <td>Centro, cruce calle 12</td>
+                <td>Alta</td>
+                <td>Equipo Alfa</td>
+              </tr>
+              <tr>
+                <td>11:00</td>
+                <td>Norte, estación Prado</td>
+                <td>Media</td>
+                <td>Equipo Delta</td>
+              </tr>
+              <tr>
+                <td>14:15</td>
+                <td>Sur, puente Las Aguas</td>
+                <td>Alta</td>
+                <td>Equipo Beta</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="reportar" class="workspace-band" aria-labelledby="reportar-titulo">
+        <div class="section-heading">
+          <p class="eyebrow">Registro</p>
+          <h2 id="reportar-titulo">Reportar incidente</h2>
+        </div>
+
+        <form id="incident-form" class="report-form" novalidate>
+          <div class="form-grid">
+            <div class="form-field">
+              <label for="incident-route">Ruta afectada</label>
+              <select id="incident-route" name="incident-route" required>
+                <option value="">Selecciona una ruta</option>
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label for="incident-type">Tipo de incidente</label>
+              <select id="incident-type" name="incident-type" required>
+                <option value="">Selecciona un tipo</option>
+                <option value="Obstáculo físico">Obstáculo físico</option>
+                <option value="Semáforo sonoro inactivo">Semáforo sonoro inactivo</option>
+                <option value="Anuncio audible ausente">Anuncio audible ausente</option>
+                <option value="Desvío sin señalización">Desvío sin señalización</option>
+              </select>
+            </div>
+
+            <div class="form-field span-all">
+              <label for="incident-detail">Detalle del incidente</label>
+              <textarea
+                id="incident-detail"
+                name="incident-detail"
+                rows="5"
+                minlength="20"
+                required
+                aria-describedby="incident-detail-help incident-error"
+              ></textarea>
+              <p id="incident-detail-help" class="field-help">
+                Incluye punto exacto, barrera encontrada y acción recomendada.
+              </p>
+            </div>
+          </div>
+
+          <fieldset class="fieldset">
+            <legend>Impacto detectado</legend>
+            <div class="check-grid">
+              <label>
+                <input type="checkbox" name="impact-block" value="bloquea desplazamiento">
+                Bloquea desplazamiento
+              </label>
+              <label>
+                <input type="checkbox" name="impact-assist" value="requiere asistencia">
+                Requiere asistencia
+              </label>
+              <label>
+                <input type="checkbox" name="impact-orientation" value="afecta orientación">
+                Afecta orientación
+              </label>
+            </div>
+          </fieldset>
+
+          <p id="incident-error" class="form-message" role="alert"></p>
+          <button type="submit" class="primary-action">Enviar reporte</button>
+        </form>
+      </section>
+
+      <section id="resumen" class="summary-band" aria-labelledby="resumen-titulo">
+        <div class="section-heading">
+          <p class="eyebrow">Bitácora</p>
+          <h2 id="resumen-titulo">Resumen del sistema</h2>
+        </div>
+
+        <div class="summary-layout">
+          <article class="summary-card">
+            <h3>Última lectura enviada</h3>
+            <p id="screen-reader-output">
+              Aún no se ha solicitado ningún resumen de ruta.
+            </p>
+          </article>
+
+          <article class="summary-card">
+            <h3>Reportes registrados</h3>
+            <ol id="report-log" class="report-log">
+              <li>No hay reportes nuevos en esta sesión.</li>
+            </ol>
+          </article>
+        </div>
+      </section>
+
+      <div id="live-region" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+    </main>
+
+    <footer class="site-footer">
+      <p>Ruta Clara. Panel académico de movilidad accesible.</p>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
